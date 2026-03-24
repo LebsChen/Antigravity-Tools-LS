@@ -1,0 +1,54 @@
+use async_trait::async_trait;
+use serde::de::DeserializeOwned;
+use anyhow::Result;
+
+pub mod openai;
+pub mod anthropic;
+pub mod gemini;
+pub mod engine;
+
+/// 映射后的增量响应块
+#[derive(Debug, Clone)]
+pub struct MapperChunk {
+    pub event: Option<String>,
+    pub data: String,
+}
+
+/// 流式传输的元数据，在流结束时发送
+#[derive(Debug, Clone, Default)]
+pub struct StreamMetadata {
+    pub input_tokens: u32,
+    pub output_tokens: u32,
+    pub error: Option<String>,
+}
+
+/// 协议转换器 Trait，用于将各种 API 协议映射到底层的 Cascade 转码逻辑
+#[async_trait]
+pub trait ProtocolMapper: Send + Sync + 'static {
+    /// 请求类型
+    type Request: DeserializeOwned + Send + Sync + 'static;
+    
+    /// 获取协议标识符
+    fn get_protocol() -> String;
+
+    /// 获取模型名称
+    fn get_model(req: &Self::Request) -> &str;
+
+    /// 将原始请求转换为底层的 Prompt 字符串
+    fn build_prompt(req: &Self::Request) -> Result<String>;
+
+    /// 处理底层的增量文本，转换为特定协议的流式响应格式（Chunk）
+    async fn map_delta(
+        model: &str,
+        delta: String,
+        is_final: bool,
+        tool_call_buffer: &mut String,
+        in_tool_call: &mut bool,
+        tool_call_index: &mut u32,
+    ) -> Result<Vec<MapperChunk>>;
+
+    /// 返回初始帧（可选）
+    fn initial_chunks() -> Vec<MapperChunk> {
+        vec![]
+    }
+}

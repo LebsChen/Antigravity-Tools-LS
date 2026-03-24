@@ -1,0 +1,10 @@
+target/
+**/node_modules/
+**/.DS_Store
+.git/
+.github/
+.vscode/
+apps/desktop/src-tauri/target/
+/dist/
+build/
+*.log

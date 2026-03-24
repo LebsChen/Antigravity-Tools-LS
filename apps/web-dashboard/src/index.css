@@ -1,0 +1,249 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --color-sidebar: var(--sidebar-bg);
+  --color-glass: var(--glass-bg);
+  --color-glass-border: var(--glass-border);
+  --color-highlight: var(--highlight);
+  
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --radius-3xl: 1.5rem;
+}
+
+@layer base {
+  :root {
+    /* Matrix Dark (Default) */
+    --bg: #000000;
+    --text: #ffffff;
+    --sidebar-bg: #000000;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --accent: #3b82f6;
+    --text-muted: rgba(255, 255, 255, 0.4);
+    --text-dim: rgba(255, 255, 255, 0.1);
+    --text-faint: rgba(255, 255, 255, 0.05);
+    --card-bg: rgba(255, 255, 255, 0.02);
+    --btn-bg: #ffffff;
+    --btn-text: #000000;
+    --highlight: #ffffff;
+  }
+
+  [data-theme="light"] {
+    /* Snow Glass (Light) */
+    --bg: #fdfdfe;
+    --text: #1e293b;
+    --sidebar-bg: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.45);
+    --glass-border: rgba(0, 0, 0, 0.05);
+    --accent: #2563eb;
+    --text-muted: #64748b;
+    --text-dim: rgba(30, 41, 59, 0.1);
+    --text-faint: rgba(30, 41, 59, 0.04);
+    --card-bg: rgba(255, 255, 255, 0.7);
+    --btn-bg: #1e293b;
+    --btn-text: #ffffff;
+    --highlight: #0f172a;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased overflow-hidden transition-colors duration-300;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .glass-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    @apply backdrop-blur-xl transition-all duration-300;
+    contain: layout style;
+  }
+
+  [data-theme="light"] .glass-card {
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.01),
+      0 10px 15px -3px rgba(0, 0, 0, 0.03),
+      0 0 0 1px rgba(0, 0, 0, 0.02);
+  }
+  
+  .sidebar-item-active {
+    background-color: var(--text-dim);
+    color: var(--text);
+  }
+
+  .sidebar-item-inactive {
+    color: var(--text-muted);
+    @apply hover:bg-foreground/5 transition-all duration-200;
+  }
+  
+  [data-theme="dark"] .sidebar-item-inactive {
+    @apply hover:text-white;
+  }
+
+  /* Matrix Unified Buttons - High Contrast Monochrome */
+  .btn-matrix-glass {
+    background-color: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    @apply backdrop-blur-xl flex items-center justify-center transition-all duration-300;
+    @apply hover:bg-foreground/[0.05] hover:border-foreground/10 active:scale-95;
+  }
+
+  .btn-matrix-pill-active {
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    border: 1px solid var(--btn-bg);
+    @apply shadow-xl transition-all duration-300;
+  }
+
+  .btn-matrix-pill-inactive {
+    color: var(--text-muted);
+    @apply hover:bg-foreground/[0.03] hover:text-foreground/60 transition-all;
+  }
+
+  .btn-matrix-primary {
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    @apply shadow-xl active:scale-95 transition-all duration-300 font-black italic;
+    @apply hover:opacity-90;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--text-dim);
+    @apply rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply opacity-80;
+  }
+
+  /* Spotlight Effect V3 - Magnetic Flux */
+  .spotlight-group {
+    @apply relative;
+  }
+
+  .spotlight-card {
+    @apply relative overflow-hidden transition-all duration-300 ease-out;
+    --glow-color: rgba(59, 130, 246, 0.12);
+    will-change: transform, opacity;
+  }
+
+  .spotlight-card:hover {
+    transform: translateY(-4px);
+    @apply shadow-[0_20px_40px_rgba(0,0,0,0.4)];
+  }
+
+  [data-theme="light"] .spotlight-card:hover {
+    @apply shadow-[0_20px_40px_rgba(30,41,59,0.08)] border-black/5;
+  }
+
+  /* Magnetic Element: 随鼠标微调位置的磁性组件 */
+  .magnetic {
+    transition: transform 0.2s ease-out;
+    transform: translate(var(--mag-x, 0px), var(--mag-y, 0px));
+  }
+
+  /* The Border Glow - V3: Sharp & Electric - 性能优化：缩小尺寸并简化计算 */
+  .spotlight-card::before {
+    content: '';
+    @apply absolute inset-0 rounded-[inherit] p-[1px] pointer-events-none opacity-0 transition-opacity duration-500 z-50;
+    background: radial-gradient(
+      400px circle at var(--mouse-x, -9999px) var(--mouse-y, -9999px),
+      rgba(255, 255, 255, 0.4),
+      transparent 25%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  /* The Background Glow - V3: Smooth data flux - 性能优化：缩小尺寸 */
+  .spotlight-card::after {
+    content: '';
+    @apply absolute inset-0 rounded-[inherit] pointer-events-none opacity-0 transition-opacity duration-300 -z-10;
+    background: radial-gradient(
+      600px circle at var(--mouse-x, -9999px) var(--mouse-y, -9999px),
+      var(--glow-color, rgba(59, 130, 246, 0.1)),
+      transparent 40%
+    );
+  }
+
+  /* Matrix Noise / Grain Overlay - 性能优化：移除重度 SVG 滤镜，改用轻量级噪声图或直接移除 */
+  .grain-overlay {
+    display: none; /* 彻底禁用 */
+  }
+
+  .spotlight-group:hover .spotlight-card::before {
+    @apply opacity-100;
+  }
+
+  .spotlight-card:hover::after {
+    @apply opacity-100;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Sidebar Transitions */
+aside {
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-item-active {
+  @apply shadow-[0_0_20px_rgba(59,130,246,0.15)];
+}
+
+/* Tooltip Animation */
+@keyframes tooltipFadeIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.group\/nav:hover .fixed {
+  animation: tooltipFadeIn 0.2s ease-out forwards;
+}
+
+[data-theme="antigravity"] {
+  --color-primary: #3b82f6;
+  --color-secondary: #10b981;
+  --color-accent: #f59e0b;
+  --color-neutral: #1f2937;
+  --color-base-100: #000000;
+  --color-info: #3b82f6;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+}
+
+/* Disable default number input spinners */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+  appearance: none;
+}

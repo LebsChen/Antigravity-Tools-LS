@@ -1,0 +1,21 @@
+import apiClient from '../client';
+
+export const settingsService = {
+  // 获取全局配置
+  get: () => apiClient.get('/settings'),
+
+  // 更新全局配置
+  update: (data) => apiClient.put('/settings', data),
+
+  // 获取系统资产状态
+  getProvisionStatus: () => apiClient.get('/provision/status'),
+
+  // 触发资产同步
+  syncAssets: (source = 'auto') => apiClient.post('/provision/sync', { source }),
+
+  // 获取版本信息
+  getVersion: () => apiClient.get('/version'),
+
+  // 检查系统更新
+  checkVersion: () => apiClient.get('/version/check'),
+};

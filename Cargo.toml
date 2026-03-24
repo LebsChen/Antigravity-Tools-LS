@@ -1,0 +1,35 @@
+[workspace]
+members = [
+    "transcoder-core",
+    "ls-orchestrator",
+    "apps/cli-server",
+    "apps/desktop/src-tauri",
+    "ls-accounts"
+]
+resolver = "2"
+
+[workspace.dependencies]
+tokio = { version = "1.37", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+axum = "0.7"
+tonic = "0.12"
+prost = "0.13"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+anyhow = "1.0"
+uuid = { version = "1.8", features = ["v4"] }
+base64 = "0.22"
+async-trait = "0.1"
+rusqlite = { version = "0.31", features = ["bundled"] }
+chrono = "0.4"
+plist = "1.6"
+reqwest = { version = "0.13.2", features = ["json", "stream"] }
+regex = "1.10"
+tar = "0.4"
+flate2 = "1.0"
+sha2 = "0.10"
+walkdir = "2.5"
+sysinfo = "0.33"
+dirs = "6.0"
+rand = "0.8"
