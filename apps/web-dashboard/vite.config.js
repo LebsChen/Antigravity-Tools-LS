@@ -7,14 +7,15 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 1420,
+    host: '0.0.0.0',
     proxy: {
       '/v1': {
-        target: 'http://127.0.0.1:5173',
+        target: 'http://localhost:5173',
         changeOrigin: true,
         ws: true,
       },
       '/oauth-callback': {
-        target: 'http://127.0.0.1:5173',
+        target: 'http://localhost:5173',
         changeOrigin: true,
       }
     }

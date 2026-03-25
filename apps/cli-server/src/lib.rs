@@ -74,6 +74,7 @@ pub async fn run_server(port: Option<u16>) -> anyhow::Result<()> {
         traffic_mgr: Arc::new(crate::traffic_db::TrafficManager::new(data_dir.clone())?),
         app_settings: RwLock::new(app_settings),
         sync_tx: sync_tx.clone(),
+        last_sync_event: RwLock::new(None),
         account_tx,
     });
 

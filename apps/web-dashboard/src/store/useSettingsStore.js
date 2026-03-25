@@ -60,7 +60,10 @@ const useSettingsStore = create((set, get) => ({
     set({ isSyncing: true, error: null });
     try {
       const result = await settingsService.syncAssets(source);
-      await get().fetchProvisionStatus();
+      await Promise.all([
+        get().fetchProvisionStatus(),
+        get().fetchVersionInfo()
+      ]);
       set({ isSyncing: false });
       return result;
     } catch (err) {

@@ -5,6 +5,7 @@ use ls_orchestrator::provider::LsProvider;
 use crate::key_manager::KeyManager;
 use transcoder_core::transcoder::StatsManager;
 use crate::handlers::settings::AppSettings;
+use crate::handlers::provision::SyncProgressEvent;
 
 // 应用全局状态
 pub struct AppState {
@@ -33,7 +34,10 @@ pub struct AppState {
     pub app_settings: RwLock<AppSettings>,
 
     // 底层内核同步进度广播 (用于资源下载进度)
-    pub sync_tx: tokio::sync::broadcast::Sender<crate::handlers::provision::SyncProgressEvent>,
+    pub sync_tx: tokio::sync::broadcast::Sender<SyncProgressEvent>,
+    
+    // 最近一次同步进度快照 (用于 SSE 建立连接时的重播) [NEW]
+    pub last_sync_event: RwLock<Option<SyncProgressEvent>>,
 
     // 账号变更事件广播 (用于实时通知 UI 刷新)
     pub account_tx: tokio::sync::broadcast::Sender<String>,

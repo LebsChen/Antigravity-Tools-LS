@@ -58,14 +58,22 @@ pub async fn sync_assets_api(
     
     // 在后台执行同步，避免阻塞 HTTP 响应
     tokio::spawn(async move {
+        let state_for_cb = state.clone();
         let callback = move |percent: u32, message: &str| {
             let stage = if percent == 100 { "completed" } else if percent > 0 { "downloading" } else { "requesting" };
-            let _ = sync_tx.send(SyncProgressEvent {
+            let event = SyncProgressEvent {
                 stage: stage.to_string(),
                 percent,
                 speed: "".to_string(),
                 message: message.to_string(),
-            });
+            };
+            
+            // 更新全局最后一次进度快照 [NEW]
+            if let Ok(mut last) = state_for_cb.last_sync_event.try_write() {
+                *last = Some(event.clone());
+            }
+
+            let _ = sync_tx.send(event);
         };
 
         match AssetProvisioner::ensure_assets_with_progress(strategy, Box::new(callback)).await {
@@ -100,6 +108,11 @@ pub async fn sync_progress_stream(
     let mut rx = state.sync_tx.subscribe();
 
     let stream = async_stream::stream! {
+        // 首先重播最近一次进度 (如果有) [NEW]
+        if let Some(msg) = state.last_sync_event.read().await.clone() {
+            yield Ok(Event::default().json_data(msg).unwrap());
+        }
+
         while let Ok(msg) = rx.recv().await {
             yield Ok(Event::default().json_data(msg).unwrap());
         }

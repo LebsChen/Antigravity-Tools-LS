@@ -32,4 +32,5 @@ futures-util = "0.3"
 
 [build-dependencies]
 tonic-build = "0.12"
+protox = "0.7"
 

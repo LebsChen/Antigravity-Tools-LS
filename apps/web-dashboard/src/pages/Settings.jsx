@@ -273,6 +273,7 @@ const AssetsTab = ({ provisionStatus, versionInfo, isSyncing, onSync, local, set
     setSyncProgress({ loading: true, percent: 0, stage: 'requesting', message: '正在初始化...' });
     
     // 建立 SSE 监听
+    const { fetchProvisionStatus, fetchVersionInfo } = useSettingsStore.getState();
     const eventSource = new EventSource('/v1/provision/progress');
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -284,8 +285,14 @@ const AssetsTab = ({ provisionStatus, versionInfo, isSyncing, onSync, local, set
       
       if (data.stage === 'completed' || data.stage === 'error') {
         eventSource.close();
+        // 无论成功还是错误，最终都要回收加载状态 [FIX]
         if (data.stage === 'completed') {
+           // 成功后立即触发全局数据刷新，确保版本号等信息同步更新 [NEW]
+           fetchProvisionStatus();
+           fetchVersionInfo();
            setTimeout(() => setSyncProgress({ loading: false }), 2000);
+        } else {
+           setSyncProgress({ loading: false });
         }
       }
     };

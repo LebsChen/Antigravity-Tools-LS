@@ -105,8 +105,8 @@ mod protobuf {
 /// 获取 Antigravity 进程信息（路径及参数）
 /// 返回 (可执行文件路径, 用户数据目录)
 pub fn get_process_info_for_api() -> (Option<PathBuf>, Option<Vec<String>>) {
-    let mut system = System::new_all();
-    system.refresh_all();
+    let mut system = System::new();
+    system.refresh_processes(sysinfo::ProcessesToUpdate::All, false);
 
     for (_pid, process) in system.processes() {
         let name = process.name().to_string_lossy().to_lowercase();

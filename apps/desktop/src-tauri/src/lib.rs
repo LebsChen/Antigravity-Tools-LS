@@ -109,22 +109,20 @@ pub fn run() {
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
         .run(|app_handle, event| {
+            #[cfg(target_os = "macos")]
             if let tauri::RunEvent::Reopen { .. } = event {
                 if let Some(window) = app_handle.get_webview_window("main") {
-                    #[cfg(target_os = "macos")]
                     app_handle.set_activation_policy(tauri::ActivationPolicy::Regular).unwrap_or(());
                     let _ = window.show();
                     let _ = window.unminimize();
                     let _ = window.set_focus();
 
-                    #[cfg(target_os = "macos")]
-                    {
-                        let icon_bytes = include_bytes!("../icons/128x128.png");
-                        if let Ok(img) = tauri::image::Image::from_bytes(icon_bytes) {
-                            let _ = window.set_icon(img);
-                        }
+                    let icon_bytes = include_bytes!("../icons/128x128.png");
+                    if let Ok(img) = tauri::image::Image::from_bytes(icon_bytes) {
+                        let _ = window.set_icon(img);
                     }
                 }
             }
+            let _ = (app_handle, event);
         });
 }
