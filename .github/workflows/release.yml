@@ -61,6 +61,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          CI: true
+          MACOSX_DEPLOYMENT_TARGET: "10.13"
         with:
           projectPath: apps/desktop
           tauriScript: npx @tauri-apps/cli@2
@@ -180,13 +182,9 @@ jobs:
           }
 
           # Read signatures for each platform
-          # Read signatures for each platform
           MACOS_UNI_SIG=$(read_sig "*_universal.app.tar.gz.sig")
           MACOS_AARCH64_SIG=$(read_sig "*_aarch64.app.tar.gz.sig")
           MACOS_X64_SIG=$(read_sig "*_x64.app.tar.gz.sig")
-          WINDOWS_NSIS_SIG=$(read_sig "*_x64-setup.exe.sig")
-          LINUX_AMD64_SIG=$(read_sig "*_amd64.AppImage.sig")
-          LINUX_AARCH64_SIG=$(read_sig "*_aarch64.AppImage.sig")
           WINDOWS_NSIS_SIG=$(read_sig "*_x64-setup.exe.sig")
           LINUX_AMD64_SIG=$(read_sig "*_amd64.AppImage.sig")
           LINUX_AARCH64_SIG=$(read_sig "*_aarch64.AppImage.sig")
@@ -209,7 +207,7 @@ jobs:
             --arg dl "$DOWNLOAD_BASE" \
             --arg mac_a64_sig "$MACOS_AARCH64_SIG" \
             --arg mac_x64_sig "$MACOS_X64_SIG" \
-            --arg windows_nsis_sig "$WINDOWS_NSIS_SIG" \
+            --arg win_nsis_sig "$WINDOWS_NSIS_SIG" \
             --arg linux_amd64_sig "$LINUX_AMD64_SIG" \
             --arg linux_a64_sig "$LINUX_AARCH64_SIG" \
             --arg mac_a64_url "$([ -n "$MACOS_AARCH64_SIG" ] && echo "Antigravity.Tools_aarch64.app.tar.gz" || echo "Antigravity.Tools_universal.app.tar.gz")" \
@@ -230,7 +228,7 @@ jobs:
                 },
                 "windows-x86_64": {
                   url: "\($dl)/Antigravity.Tools_\($ver)_x64-setup.exe",
-                  signature: $windows_nsis_sig
+                  signature: $win_nsis_sig
                 },
                 "linux-x86_64": {
                   url: "\($dl)/Antigravity.Tools_\($ver)_amd64.AppImage",
